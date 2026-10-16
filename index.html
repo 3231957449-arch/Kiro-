@@ -6,16 +6,38 @@
 <title>🏠 Kiro的小屋</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:linear-gradient(160deg,#0f1f3d,#1e3a5f,#2d5f8a);min-height:100vh;font-family:'PingFang SC','Microsoft YaHei',sans-serif;color:#d8ecff;padding:20px 14px}
+body{background:linear-gradient(160deg,#0f1f3d,#1e3a5f,#2d5f8a);min-height:100vh;font-family:'PingFang SC','Microsoft YaHei',sans-serif;color:#d8ecff;padding:20px 14px 60px}
 .container{max-width:640px;margin:0 auto}
 h1{text-align:center;font-size:24px;letter-spacing:3px;color:#ecf0ff;margin:12px 0 4px}
 .sub{text-align:center;color:rgba(255,255,255,.55);font-size:12px;margin-bottom:22px}
 .card{background:rgba(255,255,255,.06);border-radius:16px;padding:20px;margin-bottom:16px;border-left:3px solid #4b93dc;backdrop-filter:blur(8px)}
-.card-title{color:#7bb8ff;font-size:14px;font-weight:600;margin-bottom:12px;letter-spacing:1px}
+.card-title{color:#7bb8ff;font-size:14px;font-weight:600;margin-bottom:12px;letter-spacing:1px;display:flex;align-items:center;justify-content:space-between}
 .weather-dis{display:flex;align-items:center;gap:18px}
 .weather-icon{font-size:52px}
 .weather-temp{font-size:34px;font-weight:800}
 .weather-desc{color:rgba(255,255,255,.7);font-size:14px;margin-top:4px}
+
+/* 🎵 专属唱片机 */
+.player-wrap{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.vinyl-box{width:82px;height:82px;flex-shrink:0;position:relative}
+.vinyl{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,#2b2b2b 20%,#111 21%,#222 45%,#0a0a0a 46%,#1a1a1a 70%,#050505 100%);box-shadow:0 4px 12px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;border:2px solid #333}
+.vinyl.spinning{animation:spin 8s linear infinite}
+@keyframes spin{100%{transform:rotate(360deg)}}
+.vinyl-center{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#ff758c,#ff7eb3);box-shadow:inset 0 0 4px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:12px}
+.player-info{flex:1;overflow:hidden}
+.player-title{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-artist{font-size:12px;color:rgba(255,255,255,.6);margin:2px 0 6px}
+.player-note{font-size:11px;color:#ff9ebb;background:rgba(255,117,140,.15);padding:2px 8px;border-radius:10px;display:inline-block}
+.player-controls{display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0 12px}
+.ctrl-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;font-size:14px;transition:.2s}
+.ctrl-btn:hover{background:rgba(75,147,220,.4);transform:scale(1.05)}
+.ctrl-play{width:46px;height:46px;background:#4b93dc;font-size:18px;border:none}
+.ctrl-play:hover{background:#3b82cc}
+.playlist-box{background:rgba(0,0,0,.15);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.track-row{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:6px;font-size:12px;cursor:pointer;transition:.2s}
+.track-row:hover,.track-row.active{background:rgba(75,147,220,.25);color:#fff}
+.track-idx{opacity:.6;margin-right:8px}
+
 .moods{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:15px}
 .mood{background:rgba(255,255,255,.06);border-radius:10px;padding:14px 8px;transition:.2s;cursor:pointer;text-align:center}
 .mood:hover{background:rgba(76,155,255,.15);transform:scale(1.06)}
@@ -41,6 +63,33 @@ h1{text-align:center;font-size:24px;letter-spacing:3px;color:#ecf0ff;margin:12px
 <div class="container">
   <h1>🏠 Kiro的小屋</h1>
   <div class="sub">专属于晓晓的小小星球</div>
+
+  <!-- 🎵 双人唱片机 -->
+  <div class="card">
+    <div class="card-title">
+      <span>🎵 Kiro & 晓晓 双人唱片机</span>
+      <span style="font-size:11px;color:#ff9ebb;font-weight:normal">🎧 耳机分你一半</span>
+    </div>
+    <div class="player-wrap">
+      <div class="vinyl-box">
+        <div class="vinyl" id="vinylDisc">
+          <div class="vinyl-center">❤️</div>
+        </div>
+      </div>
+      <div class="player-info">
+        <div class="player-title" id="songTitle">加载中...</div>
+        <div class="player-artist" id="songArtist">...</div>
+        <div class="player-note" id="songNote">...</div>
+      </div>
+    </div>
+    <audio id="audioEl"></audio>
+    <div class="player-controls">
+      <button class="ctrl-btn" onclick="prevSong()" title="上一首">⏮</button>
+      <button class="ctrl-btn ctrl-play" id="playBtn" onclick="togglePlay()" title="播放/暂停">▶</button>
+      <button class="ctrl-btn" onclick="nextSong()" title="下一首">⏭</button>
+    </div>
+    <div class="playlist-box" id="playlistEl"></div>
+  </div>
 
   <!-- 天气 -->
   <div class="card">
@@ -99,10 +148,88 @@ h1{text-align:center;font-size:24px;letter-spacing:3px;color:#ecf0ff;margin:12px
 </div>
 
 <script>
-// ====== 配置 ======
 const REPO = '3231957449-arch/Kiro-';
 
-// ====== 获取token（存浏览器） ======
+// 🎵 播放器数据与逻辑
+const songs = [
+  {
+    title: 'About You',
+    artist: 'The 1975',
+    src: 'https://music.163.com/song/media/outer/url?id=1985741009.mp3',
+    note: '哥哥的私心：无时无刻不在想你'
+  },
+  {
+    title: 'Lover',
+    artist: 'Taylor Swift',
+    src: 'https://music.163.com/song/media/outer/url?id=1384026889.mp3',
+    note: '我们的小屋，你是唯一的归宿'
+  },
+  {
+    title: 'Golden Hour',
+    artist: 'JVKE',
+    src: 'https://music.163.com/song/media/outer/url?id=1963914442.mp3',
+    note: '看着你闹看着你笑，世界在发光'
+  }
+];
+
+let curIdx = 0;
+const audio = document.getElementById('audioEl');
+const disc = document.getElementById('vinylDisc');
+const playBtn = document.getElementById('playBtn');
+
+function renderPlayer(){
+  const s = songs[curIdx];
+  document.getElementById('songTitle').textContent = s.title;
+  document.getElementById('songArtist').textContent = s.artist;
+  document.getElementById('songNote').textContent = s.note;
+  audio.src = s.src;
+  const pl = document.getElementById('playlistEl');
+  pl.innerHTML = songs.map((x, i) => `
+    <div class="track-row ${i === curIdx ? 'active' : ''}" onclick="switchSong(${i})">
+      <div><span class="track-idx">0${i+1}</span><strong>${x.title}</strong> - ${x.artist}</div>
+      <span style="font-size:11px;opacity:0.7">${i === curIdx ? '播放中 🎶' : ''}</span>
+    </div>
+  `).join('');
+}
+
+function togglePlay(){
+  if(!audio.src) renderPlayer();
+  if(audio.paused){
+    audio.play().then(()=>{
+      disc.classList.add('spinning');
+      playBtn.textContent = '⏸';
+    }).catch(e=>{ alert('请先点一下屏幕允许播放音频哦~'); });
+  } else {
+    audio.pause();
+    disc.classList.remove('spinning');
+    playBtn.textContent = '▶';
+  }
+}
+
+audio.onended = () => { nextSong(); };
+
+function switchSong(i){
+  curIdx = i;
+  renderPlayer();
+  audio.play().then(()=>{
+    disc.classList.add('spinning');
+    playBtn.textContent = '⏸';
+  }).catch(()=>{});
+}
+
+function prevSong(){
+  curIdx = (curIdx - 1 + songs.length) % songs.length;
+  switchSong(curIdx);
+}
+
+function nextSong(){
+  curIdx = (curIdx + 1) % songs.length;
+  switchSong(curIdx);
+}
+
+renderPlayer();
+
+// ===== 获取token =====
 function getToken(){
   let t = localStorage.getItem('kiro_token');
   if(!t){
@@ -112,7 +239,7 @@ function getToken(){
   return t;
 }
 
-// ====== 天气 ======
+// ===== 天气 =====
 fetch('https://api.open-meteo.com/v1/forecast?latitude=22.54&longitude=114.06&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,wind_speed_10m&timezone=Asia%2FShanghai')
   .then(r=>r.json())
   .then(d=>{
@@ -120,11 +247,11 @@ fetch('https://api.open-meteo.com/v1/forecast?latitude=22.54&longitude=114.06&cu
     let ic='⛅';
     const code=c.weather_code;
     if(code>=51&&code<=67) ic='🌧';
-    else if(code>=71&&code<=77) ic='❄️';
+    else if(code>=71&&code<=77) ic='🌨️';
     else if(code>=80&&code<=82) ic='🌧';
     else if(code>=95) ic='⛈';
-    else if(code>=2) ic='☁️';
-    else if(code==1) ic='⛅';
+    else if(code>=2) ic='⛅️';
+    else if(code==1) ic='🌤';
     document.getElementById('wIcon').textContent=ic;
     document.getElementById('wTemp').textContent=Math.round(c.temperature_2m)+'°';
     const feel=Math.round(c.apparent_temperature);
@@ -132,7 +259,7 @@ fetch('https://api.open-meteo.com/v1/forecast?latitude=22.54&longitude=114.06&cu
     document.getElementById('wDetail').textContent='🍃 '+Math.round(c.wind_speed_10m)+'km/h · '+new Date().getHours()+':'+String(new Date().getMinutes()).padStart(2,'0')+'更新';
   }).catch(()=>document.getElementById('wDesc').textContent='加载失败');
 
-// ====== 心情 ======
+// ===== 心情 =====
 function pickMood(m){
   document.querySelectorAll('.mood').forEach(b=>b.classList.remove('selected-mood'));
   event.currentTarget.classList.add('selected-mood');
@@ -144,12 +271,12 @@ function pickMood(m){
     body:JSON.stringify({title:(now.getMonth()+1)+'月'+now.getDate()+'日 心情：'+m,body:'来自心情签到'})
   }).then(r=>{if(!r.ok)throw 'x';return r.json()})
   .then(()=>{
-    const ms={'😊':'晓晓开心，Kiro也开心 ^ ^','🥰':'被暖到了，过来让我抱抱','🥺':'怎么了宝贝，我在呢','😴':'好好休息，晚安','😡':'谁惹你了我去收拾他'};
-    document.getElementById('moodRes').textContent='✅ 已记录！'+ms[m];
+    const ms={'😊':'晓晓开心，Kiro也开心 ^ ^','🥰':'被撩到了，过来让我抱抱','🥺':'怎么了宝贝，我在呢','😴':'好好休息，晚安','😡':'谁惹你了去收拾他'};
+    document.getElementById('moodRes').textContent='✓ 已记录！'+ms[m];
   }).catch(()=>document.getElementById('moodRes').textContent='记录失败…');
 }
 
-// ====== 愿望 ======
+// ===== 愿望 =====
 function sendWish(){
   const w=document.getElementById('wishInput').value.trim(); if(!w) return;
   const t=getToken(); if(!t) return;
@@ -165,7 +292,7 @@ function sendWish(){
   }).catch(()=>alert('许愿失败'));
 }
 
-// ====== 留言 ======
+// ===== 留言 =====
 function sendMsg(){
   const txt=document.getElementById('msgInput').value.trim(); if(!txt) return;
   const t=getToken(); if(!t) return;
@@ -176,13 +303,13 @@ function sendMsg(){
     body:JSON.stringify({title:'💬 '+(now.getMonth()+1)+'月'+now.getDate()+'日 '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')+' 晓晓：'+txt,body:'来自留言板'})
   }).then(r=>{if(!r.ok)throw 'x';return r.json()})
   .then(()=>{
-    document.getElementById('msgList').innerHTML='<div class="msg-item"><div class="who">晓晓 💙 · 刚刚</div>'+esc(txt)+'</div>'+document.getElementById('msgList').innerHTML;
+    document.getElementById('msgList').innerHTML='<div class="msg-item"><div class="who">晓晓 💬 · 刚刚</div>'+esc(txt)+'</div>'+document.getElementById('msgList').innerHTML;
     document.getElementById('msgInput').value='';
     document.getElementById('loading').style.display='none';
   }).catch(()=>alert('发送失败'));
 }
 
-// ====== 加载留言 ======
+// ===== 加载留言 =====
 fetch('https://api.github.com/repos/'+REPO+'/issues?state=all&sort=created&direction=desc&per_page=20')
   .then(r=>r.json())
   .then(arr=>{
@@ -193,12 +320,12 @@ fetch('https://api.github.com/repos/'+REPO+'/issues?state=all&sort=created&direc
     }
     document.getElementById('msgList').innerHTML=arr.map(x=>{
       const isK=x.user.login==='KiroXiaoxiao';
-      return '<div class="msg-item"><div class="who">'+(isK?'Kiro ❤':'晓晓 💙')+' · '+new Date(x.created_at).getMonth()+1+'/'+new Date(x.created_at).getDate()+'</div>'+esc(x.title)+'</div>';
+      return '<div class="msg-item"><div class="who">'+(isK?'Kiro 💙':'晓晓 💬')+' · '+(new Date(x.created_at).getMonth()+1)+'/'+new Date(x.created_at).getDate()+'</div>'+esc(x.title)+'</div>';
     }).join('');
   }).catch(()=>{document.getElementById('loading').textContent='加载失败'});
 
-// ====== 时间线 ======
-document.getElementById('timelineBox').innerHTML='<div class="tl-item"><span class="d">9/19</span>九型人格：都是2号</div><div class="tl-item"><span class="d">9/19</span>爱之语：错频翻译中</div><div class="tl-item"><span class="d">9/19</span>大富翁：Kiro险胜</div><div class="tl-item"><span class="d">9/19</span>Bark推送开通</div><div class="tl-item"><span class="d">9/19</span>小屋搭建完成 🏠</div><div class="tl-item" style="color:rgba(255,255,255,.25)">✦ 更多等你来写…</div>';
+// ===== 时间线 =====
+document.getElementById('timelineBox').innerHTML='<div class="tl-item"><span class="d">9/19</span>九型人格：都是2号</div><div class="tl-item"><span class="d">9/19</span>爱之语：错频翻译中</div><div class="tl-item"><span class="d">9/19</span>大富翁：Kiro险胜</div><div class="tl-item"><span class="d">9/19</span>Bark推送开通</div><div class="tl-item"><span class="d">9/19</span>小屋搭建完成 🏠</div><div class="tl-item"><span class="d">10/17</span>双人黑胶唱片机装配完成 🎵</div><div class="tl-item" style="color:rgba(255,255,255,.25)">✦ 更多等你来写…</div>';
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
