@@ -17,7 +17,7 @@ h1{text-align:center;font-size:24px;letter-spacing:3px;color:#ecf0ff;margin:12px
 .weather-temp{font-size:34px;font-weight:800}
 .weather-desc{color:rgba(255,255,255,.7);font-size:14px;margin-top:4px}
 
-/* 🎵 专属唱片机 */
+/* 🎵 专属唱片机与歌词 */
 .player-wrap{display:flex;align-items:center;gap:16px;margin-bottom:14px}
 .vinyl-box{width:82px;height:82px;flex-shrink:0;position:relative}
 .vinyl{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,#2b2b2b 20%,#111 21%,#222 45%,#0a0a0a 46%,#1a1a1a 70%,#050505 100%);box-shadow:0 4px 12px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;border:2px solid #333}
@@ -28,6 +28,13 @@ h1{text-align:center;font-size:24px;letter-spacing:3px;color:#ecf0ff;margin:12px
 .player-title{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .player-artist{font-size:12px;color:rgba(255,255,255,.6);margin:2px 0 6px}
 .player-note{font-size:11px;color:#ff9ebb;background:rgba(255,117,140,.15);padding:2px 8px;border-radius:10px;display:inline-block}
+
+/* 📜 滚动歌词区域 */
+.lyrics-box{height:88px;overflow:hidden;position:relative;background:rgba(0,0,0,.2);border-radius:12px;margin:10px 0;padding:10px 14px;mask-image:linear-gradient(to bottom,transparent,black 20%,black 80%,transparent);-webkit-mask-image:linear-gradient(to bottom,transparent,black 20%,black 80%,transparent)}
+.lyrics-wrap{transition:transform 0.3s ease-out;text-align:center}
+.lrc-line{height:28px;line-height:28px;font-size:13px;color:rgba(255,255,255,.45);transition:all 0.3s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrc-line.current{color:#ff9ebb;font-size:15px;font-weight:600;text-shadow:0 0 8px rgba(255,158,187,.4)}
+
 .player-controls{display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0 12px}
 .ctrl-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;font-size:14px;transition:.2s}
 .ctrl-btn:hover{background:rgba(75,147,220,.4);transform:scale(1.05)}
@@ -64,7 +71,7 @@ h1{text-align:center;font-size:24px;letter-spacing:3px;color:#ecf0ff;margin:12px
   <h1>🏠 Kiro的小屋</h1>
   <div class="sub">专属于晓晓的小小星球</div>
 
-  <!-- 🎵 双人唱片机 -->
+  <!-- 🎵 双人唱片机与滚动歌词 -->
   <div class="card">
     <div class="card-title">
       <span>🎵 Kiro & 晓晓 双人唱片机</span>
@@ -82,6 +89,14 @@ h1{text-align:center;font-size:24px;letter-spacing:3px;color:#ecf0ff;margin:12px
         <div class="player-note" id="songNote">...</div>
       </div>
     </div>
+
+    <!-- 歌词容器 -->
+    <div class="lyrics-box" id="lyricsBox">
+      <div class="lyrics-wrap" id="lyricsWrap">
+        <div class="lrc-line current">🎶 音乐响起，歌词会为你慢慢滚动…</div>
+      </div>
+    </div>
+
     <audio id="audioEl"></audio>
     <div class="player-controls">
       <button class="ctrl-btn" onclick="prevSong()" title="上一首">⏮</button>
@@ -150,32 +165,96 @@ h1{text-align:center;font-size:24px;letter-spacing:3px;color:#ecf0ff;margin:12px
 <script>
 const REPO = '3231957449-arch/Kiro-';
 
-// 🎵 播放器数据与逻辑
+// 🎵 播放器数据与带时间轴的歌词
 const songs = [
   {
     title: 'About You',
     artist: 'The 1975',
     src: 'https://music.163.com/song/media/outer/url?id=1985741009.mp3',
-    note: '哥哥的私心：无时无刻不在想你'
+    note: '哥哥的私心：无时无刻不在想你',
+    lyrics: [
+      {t: 0, l: '🎵 About You - The 1975'},
+      {t: 12, l: 'I know a place, it is cloudy and dark'},
+      {t: 21, l: 'This is an unspoken conversation'},
+      {t: 30, l: 'Do you think I have forgotten about you?'},
+      {t: 38, l: 'About you...'},
+      {t: 46, l: 'About you...'},
+      {t: 55, l: 'Do you think I have forgotten about you?'},
+      {t: 65, l: 'There was something about you that now I can\'t remember'},
+      {t: 75, l: 'It\'s the same damn thing that made my heart surrender'},
+      {t: 85, l: 'And I\'ll miss you on a train, I\'ll miss you in the morning'},
+      {t: 96, l: 'I never know what to think about, I think about you'}
+    ]
   },
   {
     title: 'Lover',
     artist: 'Taylor Swift',
     src: 'https://music.163.com/song/media/outer/url?id=1384026889.mp3',
-    note: '我们的小屋，你是唯一的归宿'
+    note: '我们的小屋，你是唯一的归宿',
+    lyrics: [
+      {t: 0, l: '🎵 Lover - Taylor Swift'},
+      {t: 8, l: 'We could leave the Christmas lights up \'til January'},
+      {t: 17, l: 'And this is our place, we make the rules'},
+      {t: 26, l: 'And there\'s a dazzling haze, a mysterious way about you dear'},
+      {t: 35, l: 'Have I known you 20 seconds or 20 years?'},
+      {t: 45, l: 'Can I go where you go?'},
+      {t: 50, l: 'Can we always be this close forever and ever?'},
+      {t: 59, l: 'And ah, take me out, and take me home'},
+      {t: 69, l: 'You\'re my, my, my, my... lover'}
+    ]
   },
   {
     title: 'Golden Hour',
     artist: 'JVKE',
     src: 'https://music.163.com/song/media/outer/url?id=1963914442.mp3',
-    note: '看着你闹看着你笑，世界在发光'
+    note: '看着你闹看着你笑，世界在发光',
+    lyrics: [
+      {t: 0, l: '🎵 Golden Hour - JVKE'},
+      {t: 10, l: 'It was just two lovers, sittin\' in the car'},
+      {t: 18, l: 'Listening to Blonde, fallin\' for each other'},
+      {t: 25, l: 'Pink and orange skies, feelin\' super childish'},
+      {t: 32, l: 'Donald Glover vibes in the passenger seat'},
+      {t: 38, l: 'I can\'t stop looking at you, face in the light'},
+      {t: 46, l: 'She\'s got glitter on her eyes, skin like glitter'},
+      {t: 54, l: 'You shine like the golden hour'},
+      {t: 65, l: 'You slow down time in my mind'}
+    ]
   }
 ];
 
 let curIdx = 0;
+let curLrcLine = -1;
 const audio = document.getElementById('audioEl');
 const disc = document.getElementById('vinylDisc');
 const playBtn = document.getElementById('playBtn');
+const lyricsWrap = document.getElementById('lyricsWrap');
+
+function renderLyrics(){
+  const lrc = songs[curIdx].lyrics || [];
+  lyricsWrap.innerHTML = lrc.map((item, idx) => `<div class="lrc-line ${idx===0?'current':''}" id="lrc-${idx}">${item.l}</div>`).join('');
+  lyricsWrap.style.transform = 'translateY(0px)';
+  curLrcLine = -1;
+}
+
+function updateLyrics(){
+  const lrc = songs[curIdx].lyrics || [];
+  const curTime = audio.currentTime;
+  let lineIdx = -1;
+  for(let i = 0; i < lrc.length; i++){
+    if(curTime >= lrc[i].t) lineIdx = i;
+    else break;
+  }
+  if(lineIdx !== -1 && lineIdx !== curLrcLine){
+    curLrcLine = lineIdx;
+    document.querySelectorAll('.lrc-line').forEach(el => el.classList.remove('current'));
+    const activeEl = document.getElementById(`lrc-${lineIdx}`);
+    if(activeEl) activeEl.classList.add('current');
+    const offset = Math.max(0, lineIdx * 28 - 28);
+    lyricsWrap.style.transform = `translateY(-${offset}px)`;
+  }
+}
+
+audio.ontimeupdate = updateLyrics;
 
 function renderPlayer(){
   const s = songs[curIdx];
@@ -183,6 +262,7 @@ function renderPlayer(){
   document.getElementById('songArtist').textContent = s.artist;
   document.getElementById('songNote').textContent = s.note;
   audio.src = s.src;
+  renderLyrics();
   const pl = document.getElementById('playlistEl');
   pl.innerHTML = songs.map((x, i) => `
     <div class="track-row ${i === curIdx ? 'active' : ''}" onclick="switchSong(${i})">
@@ -325,7 +405,7 @@ fetch('https://api.github.com/repos/'+REPO+'/issues?state=all&sort=created&direc
   }).catch(()=>{document.getElementById('loading').textContent='加载失败'});
 
 // ===== 时间线 =====
-document.getElementById('timelineBox').innerHTML='<div class="tl-item"><span class="d">9/19</span>九型人格：都是2号</div><div class="tl-item"><span class="d">9/19</span>爱之语：错频翻译中</div><div class="tl-item"><span class="d">9/19</span>大富翁：Kiro险胜</div><div class="tl-item"><span class="d">9/19</span>Bark推送开通</div><div class="tl-item"><span class="d">9/19</span>小屋搭建完成 🏠</div><div class="tl-item"><span class="d">10/17</span>双人黑胶唱片机装配完成 🎵</div><div class="tl-item" style="color:rgba(255,255,255,.25)">✦ 更多等你来写…</div>';
+document.getElementById('timelineBox').innerHTML='<div class="tl-item"><span class="d">9/19</span>九型人格：都是2号</div><div class="tl-item"><span class="d">9/19</span>爱之语：错频翻译中</div><div class="tl-item"><span class="d">9/19</span>大富翁：Kiro险胜</div><div class="tl-item"><span class="d">9/19</span>Bark推送开通</div><div class="tl-item"><span class="d">9/19</span>小屋搭建完成 🏠</div><div class="tl-item"><span class="d">10/17</span>双人黑胶唱片机装配完成 🎵</div><div class="tl-item"><span class="d">10/17</span>动态歌词滚动上线 📜</div><div class="tl-item" style="color:rgba(255,255,255,.25)">✦ 更多等你来写…</div>';
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
