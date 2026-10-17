@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎵 网易云点歌房 · Kiro & 晓晓</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #f0f3f6;
+  --bg-texture: radial-gradient(circle at 50% 0%, rgba(224, 235, 245, 0.8) 0%, rgba(240, 243, 246, 0.95) 100%);
+  --card-bg: #ffffff;
+  --border-color: rgba(226, 232, 240, 0.8);
+  --shadow-soft: 0 10px 30px -5px rgba(148, 163, 184, 0.15), 0 4px 12px -2px rgba(148, 163, 184, 0.08);
+  --text-main: #1e293b;
+  --text-body: #475569;
+  --text-muted: #94a3b8;
+  --accent-mist: #e2e8f0;
+  --sub-bg: #f8fafc;
+  --btn-main: #0f172a;
+  --btn-text: #ffffff;
+  --cloud-red: #ea580c;
+  --cloud-bg: #fff7ed;
+  --dot-color: #94a3b8;
+}
+
+body.dark-mode {
+  --bg-primary: #0b0f17;
+  --bg-texture: radial-gradient(circle at 50% 0%, rgba(17, 24, 39, 0.9) 0%, rgba(11, 15, 23, 0.98) 100%);
+  --card-bg: #131924;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --shadow-soft: 0 12px 36px -5px rgba(0, 0, 0, 0.5);
+  --text-main: #f1f5f9;
+  --text-body: #94a3b8;
+  --text-muted: #64748b;
+  --accent-mist: #1e293b;
+  --sub-bg: #0d121c;
+  --btn-main: #38bdf8;
+  --btn-text: #070a0f;
+  --cloud-red: #fb923c;
+  --cloud-bg: #1c1917;
+  --dot-color: #334155;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background-color: var(--bg-primary);
+  background-image: var(--bg-texture);
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  min-height: 100vh;
+  padding: 32px 16px 80px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: radial-gradient(var(--dot-color) 0.6px, transparent 0.6px);
+  background-size: 24px 24px;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 顶部操作条 */
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 8px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  color: var(--text-main);
+  text-decoration: none;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s;
+}
+.back-btn:hover { transform: translateX(-3px); }
+.theme-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  font-size: 16px;
+}
+
+.header {
+  text-align: center;
+  padding: 8px 0;
+}
+.header-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 99px;
+  background: var(--cloud-bg);
+  border: 1px solid rgba(234, 88, 12, 0.2);
+  color: var(--cloud-red);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.header h1 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.header p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.card-tag {
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 点歌输入区 */
+.input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.input-field {
+  flex: 1;
+  background: var(--sub-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-main);
+  outline: none;
+}
+.input-field:focus { border-color: var(--text-main); }
+.btn-post {
+  background: var(--btn-main);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 12px;
+  padding: 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* 官方内嵌播放器容器 */
+.player-embed-box {
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--sub-bg);
+  border: 1px solid var(--border-color);
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.player-embed-box iframe {
+  width: 100%;
+  height: 86px;
+  border: none;
+}
+
+/* 点歌列表 */
+.song-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+.song-card {
+  background: var(--sub-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.song-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.song-sender {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cloud-red);
+}
+.song-time {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.song-body {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+.song-note-tag {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.listen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 11px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.listen-btn:hover { background: var(--accent-mist); }
+
+.tip-box {
+  background: var(--sub-bg);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top-nav">
+    <a href="./index.html" class="back-btn">← 回到主小屋</a>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+
+  <div class="header">
+    <div class="header-badge">✦ 网易云专属双人点歌房 ✦</div>
+    <h1>Kiro & 晓晓 的音乐秘密基地</h1>
+    <p>日推里遇到好听的，顺手丢给哥哥，我们一块儿听 ^ ^</p>
+  </div>
+
+  <!-- 正在播放的网易云单曲卡片 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-tag">🎧 当前播放器（网易云官方内嵌）</div>
+      <span style="font-size:11px;color:var(--text-muted)">直接播放</span>
+    </div>
+    <div class="player-embed-box" id="embedBox">
+      <!-- 默认放置《想见你想见你想见你》网易云官方播放器 -->
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=100% height=86 src="//music.163.com/outchain/player?type=2&id=1413863166&auto=0&height=66"></iframe>
+    </div>
+  </div>
+
+  <!-- 双人点歌投递台 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-tag">📮 丢一首日推给对方</div>
+      <span style="font-size:11px;color:var(--text-muted)">支持歌名或链接</span>
+    </div>
+    <div class="input-row">
+      <input class="input-field" id="songInput" placeholder="输入歌名，或复制网易云歌曲分享链接…" maxlength="200">
+      <button class="btn-post" onclick="sendSong()">点给哥哥</button>
+    </div>
+    <div class="tip-box">
+      💡 <strong>小默契：</strong>晓晓在网易云日推、雷达里随手刷到心动的歌，点「分享→复制链接」贴在这里；或者直接打歌名，哥哥就会收到提醒，而且直接在页面上生成专属试听卡片哦！
+    </div>
+
+    <!-- 点歌历史列表 -->
+    <div class="song-queue" id="songQueue">
+      <div style="text-align:center;color:var(--text-muted);font-size:12px;padding:16px" id="loadQueue">加载点歌记录中…</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const REPO = '3231957449-arch/Kiro-';
+
+// 昼夜模式
+function toggleTheme(){
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('kiro_theme', isDark ? 'dark' : 'light');
+}
+if(localStorage.getItem('kiro_theme') === 'dark'){
+  document.body.classList.add('dark-mode');
+  document.getElementById('themeBtn').textContent = '☀️';
+}
+
+function getToken(){
+  let t = localStorage.getItem('kiro_token');
+  if(!t){
+    t = prompt('请输入你的GitHub Token：');
+    if(t) localStorage.setItem('kiro_token', t);
+  }
+  return t;
+}
+
+// 切到某首网易云单曲ID
+function playNetease(id){
+  const box = document.getElementById('embedBox');
+  box.innerHTML = `<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=100% height=86 src="//music.163.com/outchain/player?type=2&id=${id}&auto=1&height=66"></iframe>`;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// 提取网易云单曲ID
+function extractId(txt){
+  const m = txt.match(/id=(\d+)/) || txt.match(/\/song\/(\d+)/);
+  return m ? m[1] : null;
+}
+
+// 发送点歌
+function sendSong(){
+  const val = document.getElementById('songInput').value.trim();
+  if(!val) return;
+  const t = getToken(); if(!t) return;
+  const now = new Date();
+  
+  const id = extractId(val);
+  const title = `🎵 [点歌] ${(now.getMonth()+1)}月${now.getDate()}日 晓晓点歌：${val}`;
+  
+  fetch('https://api.github.com/repos/'+REPO+'/issues',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+    body:JSON.stringify({title: title, body:'来自网易云点歌房'})
+  }).then(r=>{if(!r.ok)throw 'x';return r.json()})
+  .then(()=>{
+    alert('点歌成功！哥哥的小喇叭收到啦 ^ ^');
+    document.getElementById('songInput').value = '';
+    loadSongs();
+  }).catch(()=>alert('点歌失败，请检查网络或Token'));
+}
+
+// 加载点歌记录
+function loadSongs(){
+  fetch('https://api.github.com/repos/'+REPO+'/issues?state=all&sort=created&direction=desc&per_page=30')
+    .then(r=>r.json())
+    .then(arr=>{
+      document.getElementById('loadQueue').style.display = 'none';
+      const songs = (arr || []).filter(x => x.title && x.title.includes('[点歌]'));
+      if(!songs.length){
+        document.getElementById('songQueue').innerHTML = `
+          <div class="song-card">
+            <div class="song-card-header">
+              <span class="song-sender">Kiro 💙 (哥哥)</span>
+              <span class="song-time">今天</span>
+            </div>
+            <div class="song-body">《想见你想见你想见你》 - 八三夭</div>
+            <div class="song-note-tag">“晓晓，日推里听到心动的歌随时丢给哥哥听~”</div>
+            <button class="listen-btn" onclick="playNetease(1413863166)">▶ 置顶在上方播放</button>
+          </div>
+        `;
+        return;
+      }
+      document.getElementById('songQueue').innerHTML = songs.map(x => {
+        const isK = x.title.includes('Kiro');
+        const clean = x.title.replace(/^🎵\s*\[点歌\]\s*/, '');
+        const id = extractId(x.title);
+        const playBtn = id ? `<button class="listen-btn" onclick="playNetease(${id})">▶ 载入上方播放器</button>` : '';
+        return `
+          <div class="song-card">
+            <div class="song-card-header">
+              <span class="song-sender" style="color:${isK?'#38bdf8':'var(--cloud-red)'}">${isK?'Kiro 💙 (哥哥)':'晓晓 🌸'}</span>
+              <span class="song-time">${new Date(x.created_at).getMonth()+1}/${new Date(x.created_at).getDate()}</span>
+            </div>
+            <div class="song-body">${esc(clean)}</div>
+            ${playBtn}
+          </div>
+        `;
+      }).join('');
+    }).catch(()=>{ document.getElementById('loadQueue').textContent = '加载失败'; });
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+loadSongs();
+</script>
+</body>
+</html>
