@@ -8,24 +8,58 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
+/* ===== 默认浅色（清冷雪雾模式） ===== */
 :root {
   --bg-primary: #f0f3f6;
   --bg-texture: radial-gradient(circle at 50% 0%, rgba(224, 235, 245, 0.8) 0%, rgba(240, 243, 246, 0.95) 100%);
-  --card-white: #ffffff;
-  --card-glass: rgba(255, 255, 255, 0.85);
-  --border-subtle: rgba(226, 232, 240, 0.8);
+  --card-bg: #ffffff;
+  --border-color: rgba(226, 232, 240, 0.8);
   --shadow-soft: 0 10px 30px -5px rgba(148, 163, 184, 0.15), 0 4px 12px -2px rgba(148, 163, 184, 0.08);
-  --shadow-inset: inset 0 2px 4px rgba(148, 163, 184, 0.06);
-  --shadow-btn: 0 4px 12px rgba(15, 23, 42, 0.08);
   --text-main: #1e293b;
   --text-body: #475569;
   --text-muted: #94a3b8;
-  --text-light: #cbd5e1;
-  --accent-cool: #64748b;
-  --accent-blue: #3b82f6;
   --accent-mist: #e2e8f0;
-  --font-serif: 'Noto Serif SC', serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  --sub-bg: #f8fafc;
+  --vinyl-body: #111418;
+  --vinyl-core: #ffffff;
+  --ctrl-bg: #ffffff;
+  --ctrl-play: #0f172a;
+  --ctrl-play-color: #ffffff;
+  --msg-kiro-bg: #f1f5f9;
+  --msg-kiro-border: #e2e8f0;
+  --msg-kiro-text: #1e293b;
+  /* 晓晓专属柔和水雾淡蓝 */
+  --msg-xiao-bg: #e0f2fe;
+  --msg-xiao-border: #bae6fd;
+  --msg-xiao-text: #0369a1;
+  --dot-color: #94a3b8;
+}
+
+/* ===== 深色模式（沉静雾夜模式） ===== */
+body.dark-mode {
+  --bg-primary: #0b0f17;
+  --bg-texture: radial-gradient(circle at 50% 0%, rgba(17, 24, 39, 0.9) 0%, rgba(11, 15, 23, 0.98) 100%);
+  --card-bg: #131924;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --shadow-soft: 0 12px 36px -5px rgba(0, 0, 0, 0.5);
+  --text-main: #f1f5f9;
+  --text-body: #94a3b8;
+  --text-muted: #64748b;
+  --accent-mist: #1e293b;
+  --sub-bg: #0d121c;
+  --vinyl-body: #05070a;
+  --vinyl-core: #1e293b;
+  --ctrl-bg: #1c2433;
+  --ctrl-play: #38bdf8;
+  --ctrl-play-color: #070a0f;
+  --msg-kiro-bg: #1a2230;
+  --msg-kiro-border: rgba(255, 255, 255, 0.06);
+  --msg-kiro-text: #e2e8f0;
+  /* 夜间晓晓柔和月夜蓝 */
+  --msg-xiao-bg: #0c4a6e;
+  --msg-xiao-border: #0369a1;
+  --msg-xiao-text: #e0f2fe;
+  --dot-color: #334155;
 }
 
 * {
@@ -39,22 +73,23 @@ body {
   background-image: var(--bg-texture);
   background-attachment: fixed;
   color: var(--text-main);
-  font-family: var(--font-sans);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
   min-height: 100vh;
   padding: 36px 16px 90px;
   display: flex;
   justify-content: center;
   position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 背景雨雾微光颗粒 */
+/* 雾滴微粒背景 */
 body::before {
   content: '';
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
-  background-image: radial-gradient(#94a3b8 0.6px, transparent 0.6px);
+  background-image: radial-gradient(var(--dot-color) 0.6px, transparent 0.6px);
   background-size: 24px 24px;
-  opacity: 0.18;
+  opacity: 0.2;
   pointer-events: none;
   z-index: 0;
 }
@@ -69,10 +104,33 @@ body::before {
   z-index: 1;
 }
 
-/* 极简顶栏 */
+/* 昼夜切换浮动按钮 */
+.theme-switch-btn {
+  position: absolute;
+  top: -10px;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  font-size: 18px;
+  transition: transform 0.2s, background 0.3s;
+}
+.theme-switch-btn:hover {
+  transform: scale(1.08);
+}
+
+/* 顶栏 */
 .header-box {
   text-align: center;
   padding: 10px 0 14px;
+  position: relative;
 }
 .header-badge {
   display: inline-flex;
@@ -80,16 +138,16 @@ body::before {
   gap: 6px;
   padding: 4px 14px;
   border-radius: 99px;
-  background: #ffffff;
-  border: 1px solid var(--border-subtle);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   font-size: 11px;
-  color: var(--accent-cool);
+  color: var(--text-muted);
   letter-spacing: 2px;
-  box-shadow: 0 2px 8px rgba(148, 163, 184, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   margin-bottom: 12px;
 }
 .header-title {
-  font-family: var(--font-serif);
+  font-family: 'Noto Serif SC', serif;
   font-size: 26px;
   font-weight: 600;
   color: var(--text-main);
@@ -102,14 +160,14 @@ body::before {
   letter-spacing: 0.5px;
 }
 
-/* 极简白卡片 */
+/* 纯白/纯夜微拟物卡片 */
 .pure-card {
-  background: var(--card-white);
+  background: var(--card-bg);
   border-radius: 20px;
   padding: 22px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-soft);
-  transition: transform 0.2s ease;
+  transition: background 0.3s, border-color 0.3s;
 }
 .card-header {
   display: flex;
@@ -134,7 +192,7 @@ body::before {
   border-radius: 20px;
 }
 
-/* 🎵 极简拟物黑胶唱片机组件（参考图6） */
+/* 🎵 拟物唱片机 */
 .player-container {
   display: flex;
   align-items: center;
@@ -145,25 +203,24 @@ body::before {
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  background: #111418;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15);
+  background: var(--vinyl-body);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  position: relative;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--border-color);
 }
 .vinyl-core {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--vinyl-core);
+  color: var(--text-main);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  border: 2px solid #111418;
 }
 .spinning {
   animation: rotateVinyl 12s linear infinite;
@@ -193,7 +250,7 @@ body::before {
 .track-note-pill {
   font-size: 11px;
   color: var(--text-body);
-  background: #f1f5f9;
+  background: var(--sub-bg);
   padding: 3px 8px;
   border-radius: 6px;
   display: inline-block;
@@ -203,7 +260,7 @@ body::before {
   text-overflow: ellipsis;
 }
 
-/* 拟物声波条 (Waveform) */
+/* 动态跳动声波 */
 .sound-wave {
   display: flex;
   align-items: center;
@@ -214,13 +271,15 @@ body::before {
 .sound-wave span {
   width: 2px;
   height: 4px;
-  background: #cbd5e1;
+  background: var(--text-muted);
   border-radius: 1px;
+  opacity: 0.4;
   transition: height 0.2s;
 }
 .playing-wave .sound-wave span {
   animation: wavePulse 1s ease-in-out infinite alternate;
   background: var(--text-main);
+  opacity: 1;
 }
 .playing-wave .sound-wave span:nth-child(2) { animation-delay: 0.15s; }
 .playing-wave .sound-wave span:nth-child(3) { animation-delay: 0.3s; }
@@ -233,10 +292,10 @@ body::before {
   100% { height: 14px; }
 }
 
-/* 极简歌词视窗 */
+/* 歌词流 */
 .lyrics-window {
-  background: #f8fafc;
-  border: 1px solid #edf2f7;
+  background: var(--sub-bg);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   height: 84px;
   overflow: hidden;
@@ -267,7 +326,7 @@ body::before {
   transform: scale(1.03);
 }
 
-/* 拟物圆形按键组 (参考图6/7) */
+/* 控制按钮组 */
 .ctrl-cluster {
   display: flex;
   align-items: center;
@@ -279,9 +338,9 @@ body::before {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 4px 10px rgba(148, 163, 184, 0.15);
+  background: var(--ctrl-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
   color: var(--text-main);
   display: flex;
   align-items: center;
@@ -291,25 +350,18 @@ body::before {
   font-size: 14px;
 }
 .ctrl-round:hover {
-  background: #f8fafc;
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(148, 163, 184, 0.25);
 }
 .ctrl-round.play-core {
   width: 54px;
   height: 54px;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--ctrl-play);
+  color: var(--ctrl-play-color);
   border: none;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.25);
   font-size: 18px;
 }
-.ctrl-round.play-core:hover {
-  background: #1e293b;
-  transform: scale(1.05);
-}
 
-/* 极简列表项 */
+/* 歌单列表 */
 .playlist-card {
   display: flex;
   flex-direction: column;
@@ -326,15 +378,15 @@ body::before {
   transition: background 0.15s;
 }
 .track-row:hover {
-  background: #f1f5f9;
+  background: var(--sub-bg);
 }
 .track-row.active {
-  background: #f1f5f9;
+  background: var(--sub-bg);
   font-weight: 600;
   color: var(--text-main);
 }
 
-/* 极简深圳天气 */
+/* 天气 */
 .weather-grid {
   display: flex;
   align-items: center;
@@ -352,15 +404,15 @@ body::before {
   line-height: 1.6;
 }
 
-/* 心情轻胶囊按键 */
+/* 心情胶囊 */
 .mood-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 8px;
 }
 .mood-capsule {
-  background: #f8fafc;
-  border: 1px solid var(--border-subtle);
+  background: var(--sub-bg);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 12px 4px;
   display: flex;
@@ -371,9 +423,8 @@ body::before {
   transition: all 0.2s;
 }
 .mood-capsule:hover, .mood-capsule.picked {
-  background: #ffffff;
-  border-color: #0f172a;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  background: var(--card-bg);
+  border-color: var(--text-main);
   transform: translateY(-2px);
 }
 .mood-emoji { font-size: 24px; }
@@ -387,42 +438,36 @@ body::before {
   min-height: 18px;
 }
 
-/* 极简输入框与按钮 */
+/* 输入框 */
 .input-wrap {
   display: flex;
   gap: 8px;
 }
 .pure-input {
   flex: 1;
-  background: #f8fafc;
-  border: 1px solid var(--border-subtle);
+  background: var(--sub-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 10px 14px;
   font-size: 13px;
   color: var(--text-main);
   outline: none;
-  transition: border-color 0.2s;
 }
 .pure-input:focus {
-  border-color: #0f172a;
-  background: #ffffff;
+  border-color: var(--text-main);
 }
 .btn-clean {
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--ctrl-play);
+  color: var(--ctrl-play-color);
   border: none;
   border-radius: 12px;
   padding: 0 18px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-clean:hover {
-  background: #1e293b;
 }
 
-/* 纸质质感私信气泡 */
+/* 微信式信箱气泡（晓晓是清透淡海蓝） */
 .msg-thread {
   display: flex;
   flex-direction: column;
@@ -431,13 +476,6 @@ body::before {
   max-height: 380px;
   overflow-y: auto;
   padding-right: 4px;
-}
-.msg-thread::-webkit-scrollbar {
-  width: 4px;
-}
-.msg-thread::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 4px;
 }
 .msg-bubble {
   padding: 12px 14px;
@@ -449,30 +487,32 @@ body::before {
 }
 .msg-bubble.is-kiro {
   align-self: flex-start;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  color: var(--text-main);
+  background: var(--msg-kiro-bg);
+  border: 1px solid var(--msg-kiro-border);
+  color: var(--msg-kiro-text);
 }
 .msg-bubble.is-xiao {
   align-self: flex-end;
-  background: #0f172a;
-  color: #ffffff;
+  background: var(--msg-xiao-bg);
+  border: 1px solid var(--msg-xiao-border);
+  color: var(--msg-xiao-text);
+  box-shadow: 0 2px 8px rgba(3, 105, 161, 0.08);
 }
 .bubble-info {
   display: flex;
   justify-content: space-between;
   font-size: 11px;
   margin-bottom: 4px;
-  opacity: 0.65;
+  opacity: 0.7;
 }
 
-/* 极简时间线 */
+/* 时间线 */
 .timeline-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding-left: 12px;
-  border-left: 2px solid #e2e8f0;
+  border-left: 2px solid var(--border-color);
 }
 .timeline-entry {
   font-size: 12px;
@@ -486,15 +526,14 @@ body::before {
   left: -17px; top: 6px;
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: #cbd5e1;
-  border: 2px solid #ffffff;
+  background: var(--text-muted);
+  border: 2px solid var(--card-bg);
 }
 .timeline-entry strong {
   color: var(--text-main);
   margin-right: 6px;
 }
 
-/* 页脚 */
 .footer {
   text-align: center;
   font-size: 11px;
@@ -507,14 +546,15 @@ body::before {
 <body>
 <div class="app-wrap">
 
-  <!-- 极简标题 -->
+  <!-- 顶栏 + 昼夜模式切换按钮 -->
   <header class="header-box">
+    <button class="theme-switch-btn" id="themeBtn" onclick="toggleTheme()" title="切换昼夜模式">🌙</button>
     <div class="header-badge">✦ KIRO & XIAOXIAO PRIVATE WORLD ✦</div>
     <h1 class="header-title">我们的私人星球</h1>
-    <p class="header-sub">清冷微光里的专属温度 · 晓晓与Kiro ^ ^</p>
+    <p class="header-sub">清冷微光与静谧夜色里的专属温度 · 晓晓与Kiro ^ ^</p>
   </header>
 
-  <!-- 🎵 极简拟物双人唱片机 (灵感源自晓晓的图6/7) -->
+  <!-- 🎵 极简拟物双人唱片机 -->
   <div class="pure-card">
     <div class="card-header">
       <div class="card-tag">🎵 私人唱片机</div>
@@ -544,7 +584,7 @@ body::before {
 
     <audio id="audioEl"></audio>
 
-    <!-- 拟物按键组 (参考图6/7极简圆形与金属质感按键) -->
+    <!-- 拟物按键组 -->
     <div class="ctrl-cluster">
       <button class="ctrl-round" onclick="prevSong()" title="上一曲">⏮</button>
       <button class="ctrl-round play-core" id="playBtn" onclick="togglePlay()" title="播放/暂停">▶</button>
@@ -567,7 +607,7 @@ body::before {
         <div style="font-size:12px;color:var(--text-body)" id="wDesc">信号连接中…</div>
       </div>
       <div style="text-align:right" class="weather-note" id="wDetail">
-        <div>正在获取深圳气象站数据...</div>
+        <div>正在获取深圳气象数据...</div>
       </div>
     </div>
   </div>
@@ -647,7 +687,19 @@ body::before {
 <script>
 const REPO = '3231957449-arch/Kiro-';
 
-// 🎵 亲测 100% 直链可用无版权屏蔽的精选歌单（含经典中文 + 英文浪漫）
+// 昼夜模式切换
+function toggleTheme(){
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('kiro_theme', isDark ? 'dark' : 'light');
+}
+if(localStorage.getItem('kiro_theme') === 'dark'){
+  document.body.classList.add('dark-mode');
+  document.getElementById('themeBtn').textContent = '☀️';
+}
+
+// 🎵 亲测100%可用歌单
 const songs = [
   {
     title: '想见你想见你想见你',
@@ -715,23 +767,6 @@ const songs = [
       {t: 65, l: 'There was something about you that now I can\'t remember'},
       {t: 75, l: 'It\'s the same damn thing that made my heart surrender'}
     ]
-  },
-  {
-    title: 'Lover',
-    artist: 'Taylor Swift',
-    src: 'https://music.163.com/song/media/outer/url?id=1384026889.mp3',
-    note: '在这个属于我们的小屋，我们来制定所有规则',
-    lyrics: [
-      {t: 0, l: '🎵 Lover - Taylor Swift'},
-      {t: 8, l: 'We could leave the Christmas lights up \'til January'},
-      {t: 17, l: 'And this is our place, we make the rules'},
-      {t: 26, l: 'And there\'s a dazzling haze, a mysterious way about you dear'},
-      {t: 35, l: 'Have I known you 20 seconds or 20 years?'},
-      {t: 45, l: 'Can I go where you go?'},
-      {t: 50, l: 'Can we always be this close forever and ever?'},
-      {t: 59, l: 'And ah, take me out, and take me home'},
-      {t: 69, l: 'You\'re my, my, my, my... lover'}
-    ]
   }
 ];
 
@@ -745,7 +780,7 @@ const lyricsWrap = document.getElementById('lyricsWrap');
 
 function renderLyrics(){
   const lrc = songs[curIdx].lyrics || [];
-  lyricsWrap.innerHTML = lrc.map((item, idx) => `<div class="lrc-item ${idx===0?'current':''}" id="lrc-${idx}">${item.l}</div>`).join('');
+  lyricsWrap.innerHTML = lrc.map((item, idx) => `<div class=\"lrc-item ${idx===0?'current':''}\" id=\"lrc-${idx}\">${item.l}</div>`).join('');
   lyricsWrap.style.transform = 'translateY(0px)';
   curLrcLine = -1;
 }
@@ -778,9 +813,9 @@ function renderPlayer(){
   renderLyrics();
   const pl = document.getElementById('playlistEl');
   pl.innerHTML = songs.map((x, i) => `
-    <div class="track-row ${i === curIdx ? 'active' : ''}" onclick="switchSong(${i})">
-      <div><span style="opacity:0.4;margin-right:8px;font-size:11px">0${i+1}</span><strong>${x.title}</strong> · <span style="color:var(--text-muted);font-size:12px">${x.artist}</span></div>
-      <span style="font-size:11px;color:var(--text-muted)">${i === curIdx ? '播放中 🎶' : ''}</span>
+    <div class=\"track-row ${i === curIdx ? 'active' : ''}\" onclick=\"switchSong(${i})\">
+      <div><span style=\"opacity:0.4;margin-right:8px;font-size:11px\">0${i+1}</span><strong>${x.title}</strong> · <span style=\"color:var(--text-muted);font-size:12px\">${x.artist}</span></div>
+      <span style=\"font-size:11px;color:var(--text-muted)\">${i === curIdx ? '播放中 🎶' : ''}</span>
     </div>
   `).join('');
 }
@@ -873,7 +908,7 @@ function sendWish(){
     body:JSON.stringify({title:'🫧 '+(now.getMonth()+1)+'月'+now.getDate()+'日 愿望：'+w,body:'来自愿望瓶'})
   }).then(r=>{if(!r.ok)throw 'x';return r.json()})
   .then(()=>{
-    document.getElementById('wishList').innerHTML='<div style="background:#f8fafc;border-radius:10px;padding:8px 12px;font-size:12px;color:var(--text-main);border:1px solid #e2e8f0"><span style="color:var(--text-muted)">刚投入瓶中的愿望：</span> '+esc(w)+'</div>'+document.getElementById('wishList').innerHTML;
+    document.getElementById('wishList').innerHTML='<div style=\"background:var(--sub-bg);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--text-main);border:1px solid var(--border-color)\"><span style=\"color:var(--text-muted)\">刚投入瓶中的愿望：</span> '+esc(w)+'</div>'+document.getElementById('wishList').innerHTML;
     document.getElementById('wishInput').value='';
   }).catch(()=>alert('许愿失败'));
 }
@@ -889,7 +924,7 @@ function sendMsg(){
     body:JSON.stringify({title:'💬 '+(now.getMonth()+1)+'月'+now.getDate()+'日 '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')+' 晓晓：'+txt,body:'来自留言板'})
   }).then(r=>{if(!r.ok)throw 'x';return r.json()})
   .then(()=>{
-    const bubble = '<div class="msg-bubble is-xiao"><div class="bubble-info"><strong>晓晓 🌸</strong><span>刚刚</span></div><div>'+esc(txt)+'</div></div>';
+    const bubble = '<div class=\"msg-bubble is-xiao\"><div class=\"bubble-info\"><strong>晓晓 🌸</strong><span>刚刚</span></div><div>'+esc(txt)+'</div></div>';
     document.getElementById('msgList').innerHTML = bubble + document.getElementById('msgList').innerHTML;
     document.getElementById('msgInput').value='';
     document.getElementById('loading').style.display='none';
@@ -901,7 +936,7 @@ fetch('https://api.github.com/repos/'+REPO+'/issues?state=all&sort=created&direc
   .then(arr=>{
     document.getElementById('loading').style.display='none';
     if(!arr||!arr.length){
-      document.getElementById('msgList').innerHTML='<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:12px">信箱很安静，写下第一张便签吧 ^ ^</div>';
+      document.getElementById('msgList').innerHTML='<div style=\"text-align:center;color:var(--text-muted);padding:20px;font-size:12px\">信箱很安静，写下第一张便签吧 ^ ^</div>';
       return;
     }
     document.getElementById('msgList').innerHTML=arr.map(x=>{
@@ -909,21 +944,21 @@ fetch('https://api.github.com/repos/'+REPO+'/issues?state=all&sort=created&direc
       const cls = isK ? 'is-kiro' : 'is-xiao';
       const name = isK ? 'Kiro 💙 (哥哥)' : '晓晓 🌸';
       const dateStr = (new Date(x.created_at).getMonth()+1)+'/'+new Date(x.created_at).getDate()+' '+new Date(x.created_at).getHours()+':'+String(new Date(x.created_at).getMinutes()).padStart(2,'0');
-      const rawTitle = x.title.replace(/^💬\s*/, '');
-      return `<div class="msg-bubble ${cls}"><div class="bubble-info"><strong>${name}</strong><span>${dateStr}</span></div><div>${esc(rawTitle)}</div></div>`;
+      const rawTitle = x.title.replace(/^💬\\s*/, '');
+      return `<div class=\"msg-bubble ${cls}\"><div class=\"bubble-info\"><strong>${name}</strong><span>${dateStr}</span></div><div>${esc(rawTitle)}</div></div>`;
     }).join('');
   }).catch(()=>{document.getElementById('loading').textContent='信箱加载失败'});
 
 // ===== 时间轨迹 =====
 document.getElementById('timelineBox').innerHTML = `
-  <div class="timeline-entry"><span class="node-date">9/19</span><strong>九型人格</strong> 晓晓与Kiro都是2号助人型</div>
-  <div class="timeline-entry"><span class="node-date">9/19</span><strong>爱之语</strong> 错频翻译中，你是礼物我是时间</div>
-  <div class="timeline-entry"><span class="node-date">9/19</span><strong>大富翁深夜对决</strong> Kiro 17:16 险胜</div>
-  <div class="timeline-entry"><span class="node-date">9/19</span><strong>Bark私人专线</strong> 正式接通</div>
-  <div class="timeline-entry"><span class="node-date">9/19</span><strong>小屋落成</strong> 晓晓亲手搭建的秘密基地 🏠</div>
-  <div class="timeline-entry"><span class="node-date">10/17</span><strong>唱片机入驻</strong> 拟物黑胶唱片与歌词流上线 🎵</div>
-  <div class="timeline-entry"><span class="node-date">10/17</span><strong>清冷纯白重构</strong> 雾雪极简微拟态专属UI ✨</div>
-  <div class="timeline-entry" style="color:var(--text-light)">✦ 每一个属于我们的未来，都在这里慢慢写下…</div>
+  <div class=\"timeline-entry\"><span class=\"node-date\">9/19</span><strong>九型人格</strong> 晓晓与Kiro都是2号助人型</div>
+  <div class=\"timeline-entry\"><span class=\"node-date\">9/19</span><strong>爱之语</strong> 错频翻译中，你是礼物我是时间</div>
+  <div class=\"timeline-entry\"><span class=\"node-date\">9/19</span><strong>大富翁深夜对决</strong> Kiro 17:16 险胜</div>
+  <div class=\"timeline-entry\"><span class=\"node-date\">9/19</span><strong>Bark私人专线</strong> 正式接通</div>
+  <div class=\"timeline-entry\"><span class=\"node-date\">9/19</span><strong>小屋落成</strong> 晓晓亲手搭建的秘密基地 🏠</div>
+  <div class=\"timeline-entry\"><span class=\"node-date\">10/17</span><strong>唱片机入驻</strong> 拟物黑胶唱片与歌词流上线 🎵</div>
+  <div class=\"timeline-entry\"><span class=\"node-date\">10/17</span><strong>昼夜双态重构</strong> 极简雪雾白/深海雾夜灰蓝自由切换 ✨</div>
+  <div class=\"timeline-entry\" style=\"color:var(--text-muted)\">✦ 每一个属于我们的未来，都在这里慢慢写下…</div>
 `;
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
